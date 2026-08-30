@@ -3,9 +3,14 @@
 |------|---------|--------------|-------|
 | 2026-08-28 | 1 | HTML page served from a Cloud Storage bucket | gcloud storage cat |
 | 2026-08-28 | 2 | dev + test sites from one config | gcloud storage cat both buckets |
-| 2026-08-28 | 2 | pass | state is per folder, not per tfvars file |keep
-| 2026-08-28 | 2 | dev + test sites from one config | gcloud storage cat both buckets |
-| 2026-08-28 | 2 | pass | variable precedence order; sensitive ≠ encrypted |
+| 2026-08-30 | 3 | State in GCS, second apply blocked by lock | deleted local state, plan still clean |
+
+## Log
+| Date | Mission | Status | Mistakes to revisit |
+|------|---------|--------|---------------------|
+| 2026-08-28 | 1 | pass | |
+| 2026-08-28 | 2 | pass | state is per folder, not per tfvars file |
+| 2026-08-30 | 3 | pass | backend resolves before variables |
 
 ## Predict-the-plan scoreboard
 5 correct / 6 attempts
@@ -17,4 +22,4 @@
 - sensitive = true hides CLI output, does NOT encrypt state
 
 ## Open resources in GCP
-- none
+- gs://gcpsandboxgeneral-tfstate (permanent — never destroy)
