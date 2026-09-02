@@ -72,4 +72,8 @@ resource "google_compute_instance" "web" {
     hostname    = "${local.name_prefix}-web"
     environment = var.environment
   })
+
+  lifecycle {
+    replace_triggered_by = [ terraform_data.startup ]
+  }
 }

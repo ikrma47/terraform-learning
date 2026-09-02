@@ -29,6 +29,7 @@
 - Image family auto-updates => force-new VM replacement (fix in M6 with ignore_changes)
 - curl hang = packets dropped (firewall); curl fast-fail = nothing listening
 - gcloud compute instances get-serial-port-output = what the startup script actually did
+- replace_triggered_by only when no real argument changes (unfinished demo)
 
 ## Open resources in GCP
 - gs://gcpsandboxgeneral-tfstate (permanent — never destroy)
