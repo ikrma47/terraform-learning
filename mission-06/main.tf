@@ -24,7 +24,7 @@ resource "google_compute_firewall" "allow-http" {
   }
 
   lifecycle {
-    ignore_changes = [ description ]
+    ignore_changes = [description]
   }
 }
 
@@ -46,6 +46,18 @@ resource "google_compute_subnetwork" "app" {
   ip_cidr_range = each.value.cidr
   region        = each.value.region
   network       = google_compute_network.main.id
+
+  lifecycle {
+    precondition {
+      condition     = startswith(each.value.cidr, "10.")
+      error_message = "Subnet ${each.key} CIDR must be in the 10.0.0.0/8 private range."
+    }
+
+    postcondition {
+      condition     = self.gateway_address != ""
+      error_message = "Subnet must have a gateway address."
+    }
+  }
 }
 
 resource "google_compute_network" "main" {
