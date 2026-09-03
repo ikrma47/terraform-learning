@@ -22,6 +22,10 @@ resource "google_compute_firewall" "allow-http" {
     protocol = "tcp"
     ports    = ["80"]
   }
+
+  lifecycle {
+    ignore_changes = [ description ]
+  }
 }
 
 resource "google_compute_firewall" "allow_ssh" {
@@ -47,36 +51,8 @@ resource "google_compute_subnetwork" "app" {
 resource "google_compute_network" "main" {
   name                    = "${local.name_prefix}-vpc"
   auto_create_subnetworks = false
-}
-
-resource "google_compute_instance" "web" {
-  name         = "${local.name_prefix}-web"
-  machine_type = "e2-micro"
-  zone         = data.google_compute_zones.available.names[0]
-
-  boot_disk {
-    initialize_params {
-      image = data.google_compute_image.debian.self_link
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.app["subnet-0"].id
-
-    access_config {
-
-    }
-  }
-
-  metadata_startup_script = templatefile("${path.module}/startup.sh.tftpl", {
-    hostname    = "${local.name_prefix}-web"
-    environment = var.environment
-  })
 
   lifecycle {
-    replace_triggered_by = [ terraform_data.startup ]
-
-    # Image family auto-updates; upgrade deliberatley, not on a random plan
-    ignore_changes = [ boot_disk[0].initialize_params[0].image ]
+    prevent_destroy = true
   }
 }
