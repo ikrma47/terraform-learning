@@ -1,3 +1,10 @@
+check "subnets_are_in_region" {
+  assert {
+    condition     = alltrue([for s in var.subnets : s.region == var.region])
+    error_message = "Some subnets are outside the provider's default region."
+  }
+}
+
 resource "google_compute_firewall" "allow_internal" {
   name          = "${local.name_prefix}-allow-internal"
   network       = google_compute_network.main.id
@@ -65,6 +72,22 @@ resource "google_compute_network" "main" {
   auto_create_subnetworks = false
 
   lifecycle {
-    prevent_destroy = true
+    # prevent_destroy = true
   }
+}
+
+resource "google_project_service" "secretmanager" {
+  service            = "secretmanager.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_secret_manager_secret" "db_password" {
+  secret_id = "${local.name_prefix}-db-password"
+
+  replication {
+    auto {
+    }
+  }
+
+  depends_on = [google_project_service.secretmanager]
 }
