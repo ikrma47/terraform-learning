@@ -6,6 +6,7 @@
 | 2026-08-30 | 3 | State in GCS, second apply blocked by lock | deleted local state, plan still clean |
 | 2026-08-31 | 4 | 3 subnets + firewall from two maps in tfvars | gcloud firewall-rules describe showed both allow blocks |
 | 2026-09-01 | 5 | e2-micro VM serving a templated page | curl returned "Hello from dev-tf-web" |
+| 2026-09-03 | 6 | Guarded config: refused destroy, ignored drift, warned on bad region | prevent_destroy blocked destroy; check block warned |
 
 ## Log
 | Date | Mission | Status | Mistakes to revisit |
@@ -15,6 +16,7 @@
 | 2026-08-30 | 3 | pass | backend resolves before variables |
 | 2026-08-31 | 4 | pass | toset() converts a list for for_each |
 | 2026-09-01 | 5 | pass | boot-time egress unreliable; serial console is the ground truth |
+| 2026-09-03 | 6 | pass | -refresh-only reports drift, plan reverts it |
 
 ## Predict-the-plan scoreboard
 5 correct / 6 attempts
@@ -30,6 +32,11 @@
 - curl hang = packets dropped (firewall); curl fast-fail = nothing listening
 - gcloud compute instances get-serial-port-output = what the startup script actually did
 - replace_triggered_by only when no real argument changes (unfinished demo)
+- plan -refresh-only REPORTS drift; plan REVERTS it
+- -replace refreshes everything (safe); -target narrows the view (dangerous)
+- depends_on: use a reference instead whenever you can
+- Precondition errors name the expression and value, not the instance — put the key in the message yourself
+- Rename google_compute_firewall.allow-http -> allow_http (hyphen breaks A7 rule 3)
 
 ## Open resources in GCP
 - gs://gcpsandboxgeneral-tfstate (permanent — never destroy)
