@@ -1,8 +1,3 @@
-variable "allowed_ports" {
-  type        = map(list(string))
-  description = "Firewall ports to allow, keyed by protocol."
-}
-
 variable "environment" {
   type        = string
   description = "Environment name used in resource name and labels."
@@ -31,11 +26,9 @@ variable "region" {
   }
 }
 
-variable "subnets" {
-  type = map(object({
-    cidr   = string
-    region = string
-  }))
-
-  description = "Subnets to create, keyed by name."
+variable "db_password" {
+  type        = string
+  description = "Database password."
+  sensitive   = true
+  ephemeral   = true
 }
