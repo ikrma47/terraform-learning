@@ -8,6 +8,7 @@
 | 2026-09-01 | 5 | e2-micro VM serving a templated page | curl returned "Hello from dev-tf-web" |
 | 2026-09-03 | 6 | Guarded config: refused destroy, ignored drift, warned on bad region | prevent_destroy blocked destroy; check block warned |
 | 2026-09-15 | 7 | 7 resources refactored into a module | plan said 0 to add, 0 to change, 0 to destroy |
+| 2026-09-21 | 8 | Password stored in GCP, absent from state | grep secret_data → null; gcloud access → value |
 
 ## Log
 | Date | Mission | Status | Mistakes to revisit |
@@ -19,9 +20,10 @@
 | 2026-09-01 | 5 | pass | boot-time egress unreliable; serial console is the ground truth |
 | 2026-09-03 | 6 | pass | -refresh-only reports drift, plan reverts it |
 | 2026-09-15 | 7 | pass | removed + destroy = true deletes the real resource |
+| 2026-09-21 | 8 | pass | sensitive hides output, never state |
 
 ## Predict-the-plan scoreboard
-5 correct / 6 attempts
+28 correct / 32 attempts
 
 ## Things to review
 - Org policy blocks public buckets in this project (Domain Restricted Sharing)
@@ -42,6 +44,10 @@
 - removed block: destroy = false forgets it; destroy = true DELETES it
 - A module declares required_providers, never a provider block
 - Modules ask for a provider version range; the root decides; the lock file records
+- sensitive = true hides CLI output; state still has the value in plain text
+- _wo_version: Terraform can't compare a value it never stored, so it compares the version number
+- IAM: _iam_member adds; _iam_binding owns a role; _iam_policy owns everything
+- Killed apply leaves a stale lock → terraform force-unlock <ID>, only if the holder is dead
 
 ## Open resources in GCP
 - gs://gcpsandboxgeneral-tfstate (permanent — never destroy)
